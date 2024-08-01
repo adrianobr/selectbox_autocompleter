@@ -5,19 +5,33 @@
 <script type="text/javascript">
   (function(){
     // select autocomplete plugin init
-
     function initSelectboxAutocompleter() {
       <%= raw generate_target_list_for_js %>.forEach(function (target) {
          var $selectbox = $('#' + target);
          if(!$selectbox.hasClass('select2-hidden-accessible') && $selectbox.is(':visible')) {
-           $selectbox.select2();
+           elem = $selectbox.next();
+           // if toggle multiselection exist : hide it and make the select multiple by default
+           if (elem.hasClass("toggle-multiselect")) {
+            $selectbox.attr("multiple","multiple");
+            $selectbox.next().hide();
+           }
+           $selectbox.select2();       
          }
       });
     }
-
     var mo = new MutationObserver(initSelectboxAutocompleter);
     mo.observe(document.body, { attributes: true, childList: true, subtree: true });
   })();
+  // Autofocus on textbox
+  $(document).on('select2:open', (e) => {
+    const selectId = e.target.id
+    $(".select2-search__field[aria-controls='select2-" + selectId + "-results']").each(function (
+        key,
+        value,
+    ){
+        value.focus();
+    })
+  })
 </script>
 <%
   end
@@ -28,11 +42,9 @@
 <script type="text/javascript">
   (function(){
     // select autocomplete plugin init
-
     function initSelectboxAutocompleter() {
       <%= raw generate_target_list_for_js %>.forEach(function(target) {selectboxAutocompleter.generateSelectboxAutocompleter(target, '<%= type %>')});
     }
-
     var mo = new MutationObserver(initSelectboxAutocompleter);
     mo.observe(document.body, { attributes: true, childList: true, subtree: true });
   })();
